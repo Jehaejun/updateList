@@ -1,0 +1,8 @@
+./src/js/jex/serp_cms/buss/resl/resl_l001_01.js
+./src/WEB-INF/jex/xml/service/IDO/IDO.ACCT_LDGR_R035.xml
+./src/WEB-INF/jex/xml/service/IDO/IDO.ACCT_LDGR_R034.xml
+./src/WEB-INF/jex/xml/service/IDO/IDO.ACCT_LDGR_R033.xml
+./src/img/dash/market_banner_2105.jpg
+./src/view/jex/serp_cms/main/foot/foot_0001_01_view.jsp
+./src/js/jex/serp_cms/main/foot/foot_0001_01.js
+./src/img/dash/voucher2_banner.png
