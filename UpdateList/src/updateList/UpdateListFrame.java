@@ -77,7 +77,13 @@ public class UpdateListFrame {
 	}
 	
 	private void prepareGUI() {
-		String[] svnUrlArr = {"svn://10.254.241.174:3691/SERP_CMS", "svn://10.254.241.174:3691/SERPCMSADMIN", "svn://10.254.241.173/TCMC"};
+		String[] svnUrlArr = {
+				"svn://10.254.241.174:3691/SERP_CMS",
+				"svn://10.254.241.174:3691/SERPCMSHOM",
+				"svn://10.254.241.174:3691/SERPCMSADMIN",
+				"svn://10.254.241.173/TCMC"
+		};
+		
 		gbl = new GridBagLayout();
 		mainFrame.setLayout(gbl); // GridBagLayout을 설정
 		gbc = new GridBagConstraints(); // GridBagLayout에 배치할 컴포넌트 위치 정보 등을 담을 객체 준비
