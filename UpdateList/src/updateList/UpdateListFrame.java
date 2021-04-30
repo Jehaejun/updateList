@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,6 +21,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.tmatesoft.svn.core.io.SVNRepository;
 
@@ -27,6 +29,7 @@ import common.Formater;
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
+import updateList.fileWriter.SvnLogFileWriter;
 
 public class UpdateListFrame {
 	SVNRepository svnRepo; 
@@ -39,6 +42,7 @@ public class UpdateListFrame {
 	private JButton btnSearch;
 	private JButton btnConvert;
 	private JButton btnCopy;
+	private JButton btnFileOut;
 	private JButton btnJoin;
 	JTextArea txtAreaClient;
 	private JTextArea txtAreaServer;
@@ -133,11 +137,20 @@ public class UpdateListFrame {
 		gbAdd(scrollPane, 0, 6, 24, 1, 15);
 		// convert button
 		btnConvert = new JButton("변환");
+		btnConvert.setEnabled(false);
+		
 		gbAdd(btnConvert, 0, 7, 24, 1, 0.5);
 		// serverPath label, copy button
 		btnCopy = new JButton("복사");
+		btnCopy.setEnabled(false);
+		
 		gbAdd(new JLabel("Server Path"), 0, 8, 20, 1, 0.5);
-		gbAdd(btnCopy, 20, 8, 4, 1, 0.5);
+		gbAdd(btnCopy, 16, 8, 4, 1, 0.5);
+		
+		btnFileOut = new JButton("파일생성");
+		btnFileOut.setEnabled(false);
+
+		gbAdd(btnFileOut, 20, 8, 4, 1, 0.5);
 		// serverPath textAear
 		txtAreaServer = new JTextArea(10, 20);
 		txtAreaServer.setEditable(false);
@@ -168,6 +181,10 @@ public class UpdateListFrame {
 		imgLabel.setIcon(imgHide);
 		btnSearch.setEnabled(true);
 
+		btnConvert.setEnabled(true);
+		btnFileOut.setEnabled(true);
+		btnCopy.setEnabled(true);
+		
 		StringBuffer stb = new StringBuffer();
 
 		for(LogDTO log : SVNLogs) {
@@ -210,6 +227,9 @@ public class UpdateListFrame {
 				//	imgLabel.setVisible(true);
 					imgLabel.setIcon(imgIndicator);
 					btnSearch.setEnabled(false);
+					btnConvert.setEnabled(false);
+					btnFileOut.setEnabled(false);
+					btnCopy.setEnabled(false);
 					 // datePicker.getJFormattedTextField().getText()
 				/*	SvnLogCaster logCaster =  new SvnLogCaster.Builder()
 							                 .svnRepository(svnRepo)
@@ -273,6 +293,31 @@ public class UpdateListFrame {
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				}
+			}
+		});
+		
+		btnFileOut.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(txtAreaServer.getText().indexOf("삭제") > -1) {
+					JOptionPane.showMessageDialog(mainFrame, "목록 중 삭제이력이 있습니다. \n파일생성 후 확인이 필요합니다.", "알림", JOptionPane.WARNING_MESSAGE);
+				}
+				
+				// TODO Auto-generated method stub
+				try {
+					JFileChooser chooser = new JFileChooser();
+					FileNameExtensionFilter fiter = new FileNameExtensionFilter(".txt", "txt");
+					chooser.setAcceptAllFileFilterUsed(false);
+					chooser.setFileFilter(fiter);
+					chooser.showSaveDialog(null);
+
+					SvnLogFileWriter slfw = new SvnLogFileWriter(txtAreaServer.getText(), chooser.getSelectedFile().getPath() + chooser.getFileFilter().getDescription());
+					slfw.write();
+					
+					JOptionPane.showMessageDialog(mainFrame, "파일이 정상적으로 생성되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+				} catch (Exception e2) {
+					// TODO: handle exception
 				}
 			}
 		});
