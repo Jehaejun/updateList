@@ -69,6 +69,9 @@ public class UpdateListFrame {
 	private ImageIcon imgHide;
 	private JLabel imgLabel;
 	static UpdateListFrame updateListFrame;
+	private String versionData;
+	private JLabel lableUpdateDate;
+	private int nowVersion = 150;
 	
 	public UpdateListFrame() {
 		//imgIndicator = new ImageIcon("C:/Users/제해준/Desktop/loading.gif");
@@ -83,6 +86,7 @@ public class UpdateListFrame {
 		mainFrame.setLocationRelativeTo(null); // 프레임 실행시 위치 중앙
 		txtFieldId.requestFocus();
 		buttonAction();
+		getNewVersionData();
 	}
 	public static void main(String[] args) {
 		updateListFrame = new UpdateListFrame();
@@ -176,7 +180,8 @@ public class UpdateListFrame {
 		JScrollPane scrollPane2 = new JScrollPane(txtAreaServer);
 		gbAdd(scrollPane2, 0, 9, 24, 1, 15);
 
-		gbAdd(new JLabel("업데이트 일자 : " + getNewVersionData()), 0, 10, 20, 1, 0.5);
+		lableUpdateDate = new JLabel("최근 업데이트 일자 : 무야호~");
+		gbAdd(lableUpdateDate, 0, 10, 20, 1, 0.5);
 		
 		btnNewVersionDownlaod = new JButton("최신버전 다운로드");
 	//	btnNewVersionDownlaod.setEnabled(false);
@@ -202,18 +207,28 @@ public class UpdateListFrame {
 
 	}
 	
-	public String getNewVersionData() {
-		String data = "소켓 서버 통신 에러";
+	public void getNewVersionData() {
+	//	String data = "소켓 서버 통신 에러";
 		try (Socket socket2 = new Socket("10.254.241.154", 9999);
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
 			) {
-			data = br.readLine();
+			versionData = br.readLine();
+			String[] vData = versionData.split("/");
+			lableUpdateDate.setText("최근 업데이트 일자 : " + vData[0]);
+			mainFrame.setTitle("적용목록 " + vData[1]);
+			
+			if(nowVersion < Integer.parseInt(vData[2])) {
+				int result = JOptionPane.showConfirmDialog(null, "최신 버전이 존재합니다.\n다운로드 하시겠습니까?", "알림", JOptionPane.YES_NO_OPTION);
+				
+				if (result == JOptionPane.YES_OPTION) {
+					btnNewVersionDownlaod.doClick();
+				}
+			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return data;
 	}
 	
 	public void callBackSVN(List<LogDTO> SVNLogs) {
