@@ -10,6 +10,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -46,6 +56,7 @@ public class UpdateListFrame {
 	private JButton btnCopy;
 	private JButton btnFileOut;
 	private JButton btnJoin;
+	private JButton btnNewVersionDownlaod;
 	JTextArea txtAreaClient;
 	private JTextArea txtAreaServer;
 	private SvnModule svnModule;
@@ -157,16 +168,23 @@ public class UpdateListFrame {
 		
 		btnFileOut = new JButton("파일생성");
 		btnFileOut.setEnabled(false);
-
 		gbAdd(btnFileOut, 20, 8, 4, 1, 0.5);
+		
 		// serverPath textAear
 		txtAreaServer = new JTextArea(10, 20);
 		txtAreaServer.setEditable(false);
 		JScrollPane scrollPane2 = new JScrollPane(txtAreaServer);
 		gbAdd(scrollPane2, 0, 9, 24, 1, 15);
+
+		gbAdd(new JLabel("업데이트 일자 : " + getNewVersionData()), 0, 10, 20, 1, 0.5);
+		
+		btnNewVersionDownlaod = new JButton("최신버전 다운로드");
+	//	btnNewVersionDownlaod.setEnabled(false);
+		gbAdd(btnNewVersionDownlaod, 20, 10, 4, 1, 0.5);
+		
 		
 		for(int i = 0; i < 24; i++) {
-			gbAdd(new JLabel(), i,  10, 1, 1, 0.1);
+			gbAdd(new JLabel(), i,  11, 1, 1, 0.1);
 		}
 	}
 	
@@ -182,6 +200,20 @@ public class UpdateListFrame {
 
 		mainFrame.add(c);
 
+	}
+	
+	public String getNewVersionData() {
+		String data = "소켓 서버 통신 에러";
+		try (Socket socket2 = new Socket("10.254.241.154", 9999);
+				BufferedReader br = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
+			) {
+			data = br.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return data;
 	}
 	
 	public void callBackSVN(List<LogDTO> SVNLogs) {
@@ -318,12 +350,18 @@ public class UpdateListFrame {
 					FileNameExtensionFilter fiter = new FileNameExtensionFilter(".txt", "txt");
 					chooser.setAcceptAllFileFilterUsed(false);
 					chooser.setFileFilter(fiter);
-					chooser.showSaveDialog(null);
-
-					SvnLogFileWriter slfw = new SvnLogFileWriter(txtAreaServer.getText(), chooser.getSelectedFile().getPath() + chooser.getFileFilter().getDescription());
-					slfw.write();
+					int result = chooser.showSaveDialog(null);
 					
-					JOptionPane.showMessageDialog(mainFrame, "파일이 정상적으로 생성되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+					if (result == JFileChooser.APPROVE_OPTION) {
+						SvnLogFileWriter slfw = new SvnLogFileWriter(txtAreaServer.getText(), chooser.getSelectedFile().getPath() + chooser.getFileFilter().getDescription());
+						slfw.write();
+						
+						JOptionPane.showMessageDialog(mainFrame, "파일이 정상적으로 생성되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+					} else if (result == JFileChooser.CANCEL_OPTION) {
+						
+					}
+
+					
 				} catch (Exception e2) {
 					// TODO: handle exception
 				}
@@ -352,6 +390,56 @@ public class UpdateListFrame {
 				}
 			}
 			
+		});
+		
+		btnNewVersionDownlaod.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e){
+				JFileChooser chooser = new JFileChooser();
+				FileNameExtensionFilter fiter = new FileNameExtensionFilter(".jar", "jar");
+				chooser.setAcceptAllFileFilterUsed(false);
+				chooser.setFileFilter(fiter);
+				
+				int result = chooser.showSaveDialog(null);
+				
+				if (result == JFileChooser.APPROVE_OPTION) {
+					//String fileName = "updateList.jar";
+					String serverIP = "10.254.241.154";
+					int port = 8888;
+
+				    try (
+				      Socket socket = new Socket(serverIP, port);
+				      DataInputStream bin = new DataInputStream(socket.getInputStream());
+				      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+				      BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(new File(chooser.getSelectedFile().getPath() 
+				    		  + (chooser.getSelectedFile().getPath().indexOf(".jar") > -1 ? "" : chooser.getFileFilter().getDescription()))));
+				    ) {
+				      long size = bin.readLong();		// 전송받을 데이터의 총 크기
+				      
+				      //System.out.println(size);
+				      
+				      int readed = 0;
+				      byte [] b = new byte[10000];
+				      while(true) {
+				        readed = bin.read(b);
+				        bout.write(b, 0, readed);
+				        size-=readed;
+						if(size==0) {
+				          break;
+				        }
+				      }
+				      //System.out.println("파일 전송 완료!!");
+				      JOptionPane.showMessageDialog(mainFrame, "다운로드 완료.", "알림", JOptionPane.INFORMATION_MESSAGE);
+				      
+				      bw.write("success!!");
+				      bw.flush();
+				    } catch (Exception e3) {
+				      e3.printStackTrace();
+				    }
+				} else if (result == JFileChooser.CANCEL_OPTION) {
+					
+				}
+			}
 		});
 	}
 
