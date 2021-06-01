@@ -71,14 +71,15 @@ public class UpdateListFrame {
 	static UpdateListFrame updateListFrame;
 	private String versionData;
 	private JLabel lableUpdateDate;
-	private int nowVersion = 150;
+	private int nowVersion = 152;
+	private String nowVersionTitle = "v1.5.2";
 	
 	public UpdateListFrame() {
 		//imgIndicator = new ImageIcon("C:/Users/제해준/Desktop/loading.gif");
 		imgIndicator = new ImageIcon(getClass().getResource("/image/loading.gif"));
 		imgHide = new ImageIcon(getClass().getResource("/image/hide.PNG"));
 		
-		mainFrame = new JFrame("반영목록");
+		mainFrame = new JFrame("반영목록 " + nowVersionTitle);
 		mainFrame.setSize(1000, 1000);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		prepareGUI();
@@ -180,7 +181,7 @@ public class UpdateListFrame {
 		JScrollPane scrollPane2 = new JScrollPane(txtAreaServer);
 		gbAdd(scrollPane2, 0, 9, 24, 1, 15);
 
-		lableUpdateDate = new JLabel("최근 업데이트 일자 : 무야호~");
+		lableUpdateDate = new JLabel("");
 		gbAdd(lableUpdateDate, 0, 10, 20, 1, 0.5);
 		
 		btnNewVersionDownlaod = new JButton("최신버전 다운로드");
@@ -215,9 +216,9 @@ public class UpdateListFrame {
 			versionData = br.readLine();
 			String[] vData = versionData.split("/");
 			lableUpdateDate.setText("최근 업데이트 일자 : " + vData[0]);
-			mainFrame.setTitle("적용목록 " + vData[1]);
+			//mainFrame.setTitle("적용목록 " + vData[1]);
 			
-			if(nowVersion < Integer.parseInt(vData[2])) {
+			if(nowVersion < Integer.parseInt(vData[1])) {
 				int result = JOptionPane.showConfirmDialog(null, "최신 버전이 존재합니다.\n다운로드 하시겠습니까?", "알림", JOptionPane.YES_NO_OPTION);
 				
 				if (result == JOptionPane.YES_OPTION) {
@@ -228,6 +229,8 @@ public class UpdateListFrame {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			lableUpdateDate.setText("최근 업데이트 일자 : 통신에러");
+			btnNewVersionDownlaod.setEnabled(false);
 		}
 	}
 	
