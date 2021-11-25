@@ -10,15 +10,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.util.List;
 
@@ -71,8 +74,9 @@ public class UpdateListFrame {
 	static UpdateListFrame updateListFrame;
 	private String versionData;
 	private JLabel lableUpdateDate;
-	private int nowVersion = 152;
-	private String nowVersionTitle = "v1.5.2";
+	private int nowVersion = 160;
+	private String nowVersionTitle = "v1.6.0";
+	Exception tempException;
 	
 	public UpdateListFrame() {
 		//imgIndicator = new ImageIcon("C:/Users/제해준/Desktop/loading.gif");
@@ -87,11 +91,11 @@ public class UpdateListFrame {
 		mainFrame.setLocationRelativeTo(null); // 프레임 실행시 위치 중앙
 		txtFieldId.requestFocus();
 		buttonAction();
-		getNewVersionData();
+		
 	}
 	public static void main(String[] args) {
 		updateListFrame = new UpdateListFrame();
-		
+		updateListFrame.getNewVersionData();
 	}
 	
 	private void prepareGUI() {
@@ -99,6 +103,9 @@ public class UpdateListFrame {
 				"svn://10.254.241.174:3691/SERP_CMS",
 				"svn://10.254.241.174:3691/SERPCMSHOME",
 				"svn://10.254.241.174:3691/SERPCMSADMIN",
+				"svn://10.254.241.174:3691/WEBIZ",
+				"svn://10.254.241.174:3691/TAXBILL_GW",
+				"svn://10.254.241.174:3691/TAXBILL_NEW",
 				"svn://10.254.241.173/TCMC"
 		};
 		
@@ -207,10 +214,11 @@ public class UpdateListFrame {
 		mainFrame.add(c);
 
 	}
-	
+
 	public void getNewVersionData() {
-	//	String data = "소켓 서버 통신 에러";
-		try (Socket socket2 = new Socket("10.254.241.154", 9999);
+		lableUpdateDate.setText("최근 업데이트 일자 : 소켓 통신 대기중..");
+		
+	try (Socket socket2 = new Socket("10.254.241.154", 9999);
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
 			) {
 			versionData = br.readLine();
@@ -226,12 +234,24 @@ public class UpdateListFrame {
 				}
 			}
 			
-		} catch (IOException e) {
+			tempException = null;
+			
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			lableUpdateDate.setText("최근 업데이트 일자 : 통신에러");
+			lableUpdateDate.setText("최근 업데이트 일자 : 소켓 서버 에러");
 			btnNewVersionDownlaod.setEnabled(false);
+			
+			tempException = e;
+			//showErrorDialog(e);
 		}
+	}
+	
+	private void showErrorDialog(Exception e) {
+		StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+
+        JOptionPane.showInputDialog(null, "error log : ", "알림", 0, null, null, errors.toString());
 	}
 	
 	public void callBackSVN(List<LogDTO> SVNLogs) {
@@ -274,6 +294,7 @@ public class UpdateListFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(mainFrame, "SVN 접속에 실패하였습니다.", "알림", JOptionPane.ERROR_MESSAGE);
+					showErrorDialog(e1);
 				}
 			}
 		});
@@ -306,7 +327,9 @@ public class UpdateListFrame {
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-					JOptionPane.showMessageDialog(mainFrame, "처리중 에러가 발생하였습니다.", "알림", JOptionPane.ERROR_MESSAGE);
+					//JOptionPane.showMessageDialog(mainFrame, "처리중 에러가 발생하였습니다.", "알림", JOptionPane.ERROR_MESSAGE);
+					
+					showErrorDialog(e1);
 				}
 			}
 		});
@@ -335,6 +358,8 @@ public class UpdateListFrame {
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+					
+					showErrorDialog(e1);
 				}
 			}
 		});
@@ -351,6 +376,7 @@ public class UpdateListFrame {
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+					showErrorDialog(e1);
 				}
 			}
 		});
@@ -382,6 +408,7 @@ public class UpdateListFrame {
 					
 				} catch (Exception e2) {
 					// TODO: handle exception
+					showErrorDialog(e2);
 				}
 			}
 		});
@@ -456,6 +483,14 @@ public class UpdateListFrame {
 				    }
 				} else if (result == JFileChooser.CANCEL_OPTION) {
 					
+				}
+			}
+		});
+		
+		lableUpdateDate.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(tempException != null) {
+					showErrorDialog(tempException);
 				}
 			}
 		});
