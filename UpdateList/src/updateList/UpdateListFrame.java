@@ -31,6 +31,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -74,9 +77,13 @@ public class UpdateListFrame {
 	static UpdateListFrame updateListFrame;
 	private String versionData;
 	private JLabel lableUpdateDate;
-	private int nowVersion = 160;
-	private String nowVersionTitle = "v1.6.0";
+	private int nowVersion = 161;
+	private String nowVersionTitle = "v1.6.1";
 	Exception tempException;
+	
+	JMenuBar menuBar; //메뉴바 선언
+	JMenu menu; //메뉴 선언
+	JMenuItem menuItem; //메뉴 항목 선언
 	
 	public UpdateListFrame() {
 		//imgIndicator = new ImageIcon("C:/Users/제해준/Desktop/loading.gif");
@@ -90,8 +97,9 @@ public class UpdateListFrame {
 		mainFrame.setVisible(true);
 		mainFrame.setLocationRelativeTo(null); // 프레임 실행시 위치 중앙
 		txtFieldId.requestFocus();
+		setMenuBar();
 		buttonAction();
-		
+
 	}
 	public static void main(String[] args) {
 		updateListFrame = new UpdateListFrame();
@@ -105,8 +113,8 @@ public class UpdateListFrame {
 				"svn://10.254.241.174:3691/SERPCMSADMIN",
 				"svn://10.254.241.174:3691/WEBIZ",
 				"svn://10.254.241.174:3691/TAXBILL_GW",
-				"svn://10.254.241.174:3691/TAXBILL_NEW",
-				"svn://10.254.241.173/TCMC"
+				"svn://10.254.241.174:3691/TAXBILL_NEW"/*,
+				"svn://10.254.241.173/TCMC"*/
 		};
 		
 		gbl = new GridBagLayout();
@@ -201,6 +209,21 @@ public class UpdateListFrame {
 		}
 	}
 	
+	private void setMenuBar() {
+		menuBar = new JMenuBar(); //메뉴바 초기화
+		menu = new JMenu("Help");
+		
+		menuBar.add(menu);
+		
+		JMenu subMenu = new JMenu("문의");
+		menuItem = new JMenuItem("제해준 주임");
+		subMenu.add(menuItem);
+		
+		menu.add(subMenu);
+		
+		mainFrame.setJMenuBar(menuBar); //프레임에 메뉴바 설정
+	}
+	
 	private void gbAdd(Component c, int x, int y, int w, int h, double wit) {
 		gbc.gridx = x;
 		gbc.gridy = y;
@@ -276,6 +299,12 @@ public class UpdateListFrame {
 	}
 	
 	private void buttonAction() {
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(mainFrame, "ㅎㅇㅎㅇ", "알림", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		
 		btnJoin.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -343,7 +372,9 @@ public class UpdateListFrame {
 					String rootPath = SVNUrl.substring(SVNUrl.lastIndexOf("/"), SVNUrl.length());
 					PathConvertible converter;
 					
-					if(SVNUrl.indexOf("10.254.241.174") > -1) {			// jex 3.0
+					converter = new JexThirdPathConverterImpl(txtAreaClient.getText(), rootPath);
+					
+					/*if(SVNUrl.indexOf("10.254.241.174") > -1) {			// jex 3.0
 						converter = new JexThirdPathConverterImpl(txtAreaClient.getText(), rootPath);
 						
 					}else if(SVNUrl.indexOf("10.254.241.173") > -1) {	// jex 2.0
@@ -351,7 +382,7 @@ public class UpdateListFrame {
 						
 					}else {												// taxbill
 						converter = new TaxbillPathConverterImpl(txtAreaClient.getText(), rootPath);
-					}
+					}*/
 					
 					txtAreaServer.setText(converter.convert());
 
