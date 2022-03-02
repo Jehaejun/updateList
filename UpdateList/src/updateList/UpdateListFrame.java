@@ -108,6 +108,7 @@ public class UpdateListFrame {
 	
 	private void prepareGUI() {
 		String[] svnUrlArr = {
+				"svn://10.254.241.174:3691/SCLOUD_ERP",
 				"svn://10.254.241.174:3691/SERP_CMS",
 				"svn://10.254.241.174:3691/SERPCMSHOME",
 				"svn://10.254.241.174:3691/SERPCMSADMIN",
