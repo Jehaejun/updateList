@@ -41,6 +41,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 import common.Formater;
@@ -50,6 +52,10 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import updateList.fileWriter.SvnLogFileWriter;
 
 public class UpdateListFrame {
+	private final String _SOCKET_SERVER_IP = "10.254.241.154";
+	private final int _FILE_SOCKET_PORT = 10081;
+	private final int _INFO_SOCKET_PORT = 10080;
+	
 	SVNRepository svnRepo; 
 	GridBagLayout gbl;
 	GridBagConstraints gbc;
@@ -77,8 +83,8 @@ public class UpdateListFrame {
 	static UpdateListFrame updateListFrame;
 	private String versionData;
 	private JLabel lableUpdateDate;
-	private int nowVersion = 162;
-	private String nowVersionTitle = "v1.6.2";
+	private int nowVersion = 172;
+	private String nowVersionTitle = "v1.7.2";
 	Exception tempException;
 	
 	JMenuBar menuBar; //메뉴바 선언
@@ -242,15 +248,16 @@ public class UpdateListFrame {
 	public void getNewVersionData() {
 		lableUpdateDate.setText("최근 업데이트 일자 : 소켓 통신 대기중..");
 		
-	try (Socket socket2 = new Socket("10.254.241.154", 9999);
+	try (Socket socket2 = new Socket(_SOCKET_SERVER_IP, _INFO_SOCKET_PORT);
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket2.getInputStream()));
 			) {
 			versionData = br.readLine();
-			String[] vData = versionData.split("/");
-			lableUpdateDate.setText("최근 업데이트 일자 : " + vData[0]);
+			JSONObject jsonObj = (JSONObject) new JSONParser().parse(versionData);
+			//String[] vData = versionData.split("/");
+			lableUpdateDate.setText("최근 업데이트 일자 : " + (String)jsonObj.get("UPDATE_DATE"));
 			//mainFrame.setTitle("적용목록 " + vData[1]);
 			
-			if(nowVersion < Integer.parseInt(vData[1])) {
+			if(nowVersion < Integer.parseInt((String)jsonObj.get("NEW_VERSION"))) {
 				int result = JOptionPane.showConfirmDialog(null, "최신 버전이 존재합니다.\n다운로드 하시겠습니까?", "알림", JOptionPane.YES_NO_OPTION);
 				
 				if (result == JOptionPane.YES_OPTION) {
@@ -481,8 +488,8 @@ public class UpdateListFrame {
 				
 				if (result == JFileChooser.APPROVE_OPTION) {
 					//String fileName = "updateList.jar";
-					String serverIP = "10.254.241.154";
-					int port = 8888;
+					String serverIP = _SOCKET_SERVER_IP;
+					int port = _FILE_SOCKET_PORT;
 
 				    try (
 				      Socket socket = new Socket(serverIP, port);
@@ -508,7 +515,7 @@ public class UpdateListFrame {
 				      //System.out.println("파일 전송 완료!!");
 				      JOptionPane.showMessageDialog(mainFrame, "다운로드 완료.", "알림", JOptionPane.INFORMATION_MESSAGE);
 				      
-				      bw.write("success!!");
+				      bw.write("download success");
 				      bw.flush();
 				    } catch (Exception e3) {
 				      e3.printStackTrace();
