@@ -512,11 +512,12 @@ public class UpdateListFrame {
 				          break;
 				        }
 				      }
-				      //System.out.println("파일 전송 완료!!");
-				      JOptionPane.showMessageDialog(mainFrame, "다운로드 완료.", "알림", JOptionPane.INFORMATION_MESSAGE);
 				      
 				      bw.write("download success");
 				      bw.flush();
+				      //System.out.println("파일 전송 완료!!");
+				      JOptionPane.showMessageDialog(mainFrame, "다운로드 완료.", "알림", JOptionPane.INFORMATION_MESSAGE);
+
 				    } catch (Exception e3) {
 				      e3.printStackTrace();
 				    }
