@@ -499,22 +499,21 @@ public class UpdateListFrame {
 				    		  + (chooser.getSelectedFile().getPath().indexOf(".jar") > -1 ? "" : chooser.getFileFilter().getDescription()))));
 				    ) {
 				      long size = bin.readLong();		// 전송받을 데이터의 총 크기
-				      
-				      //System.out.println(size);
-				      
+				      				      
 				      int readed = 0;
 				      byte [] b = new byte[10000];
 				      while(true) {
 				        readed = bin.read(b);
 				        bout.write(b, 0, readed);
-				        size-=readed;
-						if(size==0) {
+				        size -= readed;
+						if(size == 0) {
 				          break;
 				        }
 				      }
 				      
 				      bw.write("download success");
 				      bw.flush();
+
 				      //System.out.println("파일 전송 완료!!");
 				      JOptionPane.showMessageDialog(mainFrame, "다운로드 완료.", "알림", JOptionPane.INFORMATION_MESSAGE);
 
