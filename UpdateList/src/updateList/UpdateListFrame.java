@@ -83,8 +83,8 @@ public class UpdateListFrame {
 	static UpdateListFrame updateListFrame;
 	private String versionData;
 	private JLabel lableUpdateDate;
-	private int nowVersion = 172;
-	private String nowVersionTitle = "v1.7.2";
+	private int nowVersion = 173;
+	private String nowVersionTitle = "v1.7.3";
 	Exception tempException;
 	
 	JMenuBar menuBar; //메뉴바 선언
