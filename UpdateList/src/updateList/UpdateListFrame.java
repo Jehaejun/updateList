@@ -114,13 +114,13 @@ public class UpdateListFrame {
 	
 	private void prepareGUI() {
 		String[] svnUrlArr = {
-				"svn://10.254.241.174:3691/SCLOUD_ERP",
-				"svn://10.254.241.174:3691/SERP_CMS",
-				"svn://10.254.241.174:3691/SERPCMSHOME",
-				"svn://10.254.241.174:3691/SERPCMSADMIN",
-				"svn://10.254.241.174:3691/WEBIZ",
-				"svn://10.254.241.174:3691/TAXBILL_GW",
-				"svn://10.254.241.174:3691/TAXBILL_NEW"/*,
+				"svn://studio30.jexframe.com:3693/SERP_CMS",
+				"svn://studio30.jexframe.com:3693/SCLOUD_ERP",
+				"svn://studio30.jexframe.com:3693/SERPCMSHOME",
+				"svn://studio30.jexframe.com:3693/SERPCMSADMIN",
+				"svn://studio30.jexframe.com:3693/WEBIZ",
+				"svn://studio30.jexframe.com:3693/TAXBILL_GW",
+				"svn://studio30.jexframe.com:3693/TAXBILL_NEW"/*,
 				"svn://10.254.241.173/TCMC"*/
 		};
 		
